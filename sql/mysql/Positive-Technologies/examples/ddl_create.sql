@@ -28,7 +28,20 @@ create table ts_table(
   ts6 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE LOCALTIMESTAMP(),
   ts7 TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE NOW(),
   ts8 TIMESTAMP(6) NOT NULL,
-  ts9 TIMESTAMP(6) NOT NULL DEFAULT NOW(6) ON UPDATE NOW(6)
+  ts9 TIMESTAMP(6) NOT NULL DEFAULT NOW(6) ON UPDATE NOW(6),
+  ts10 TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  ts11 TIMESTAMP NOT NULL DEFAULT '2038-01-01 00:00:00' ON UPDATE CURRENT_TIMESTAMP
+);
+create table dt_table(
+  dt1 DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  dt2 DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE LOCALTIME,
+  dt3 DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE LOCALTIMESTAMP,
+  dt4 DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(),
+  dt5 DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE LOCALTIME(),
+  dt6 DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE LOCALTIMESTAMP(),
+  dt7 DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE NOW(),
+  dt10 DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  dt11 DATETIME DEFAULT '2038-01-01 00:00:00' ON UPDATE CURRENT_TIMESTAMP
 );
 create table with_check (c1 integer not null,c2 varchar(22),constraint c1 check (c2 in ('a', 'b', 'c')));
 CREATE TABLE genvalue1 (id binary(16) NOT NULL, val char(32) GENERATED ALWAYS AS (hex(id)) STORED, PRIMARY KEY (id));
@@ -52,6 +65,9 @@ create table table_with_character_set_eq (id int, data varchar(50)) character se
 create table table_with_character_set (id int, data varchar(50)) character set default;
 create table table_with_visible_index (id int, data varchar(50), UNIQUE INDEX `data_UNIQUE` (`data` ASC) INVISIBLE VISIBLE);
 create table table_with_index (id int, data varchar(50), UNIQUE INDEX `data_UNIQUE` (`data` ASC));
+create table blob_test(id int, col1 blob(45));
+create table žluťoučký (kůň int);
+create table column_names_as_aggr_funcs(min varchar(100), max varchar(100), sum varchar(100), count varchar(100));
 #end
 #begin
 -- Rename table
@@ -145,6 +161,7 @@ CREATE DEFINER=`ctlplane`@`%` TRIGGER `write_key_add` AFTER INSERT ON `sources` 
 BEGIN
 DECLARE i, n INT DEFAULT 0;
 SET n = JSON_LENGTH(CAST(CONVERT(NEW.write_keys USING utf8mb4) AS JSON));
+SET campaign_id = NEW.write_keys->>'$.campaign_id';
 WHILE i < n DO
 INSERT INTO source_id_write_key_mapping (source_id, write_key)
 VALUES (NEW.id, JSON_UNQUOTE(JSON_EXTRACT(CAST(CONVERT(NEW.write_keys USING utf8mb4) AS JSON), CONCAT('$[', i, ']'))))
@@ -244,4 +261,16 @@ CREATE TABLE `tab1` (
   l LONG,
   mi MIDDLEINT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+#end
+#begin
+-- Create procedure
+-- The default value for local variables in a DECLARE statement should be an expression
+-- src: https://dev.mysql.com/doc/refman/5.7/en/declare-local-variable.html
+-- delimiter //
+CREATE PROCEDURE procedure1()
+BEGIN
+  DECLARE var1 INT unsigned default 1;
+  DECLARE var2 TIMESTAMP default CURRENT_TIMESTAMP;
+  DECLARE var3 INT unsigned default 2 + var1;
+END -- //-- delimiter ;
 #end

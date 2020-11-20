@@ -489,6 +489,7 @@ MAX_SIZE:                            'MAX_SIZE';
 MAX_UPDATES_PER_HOUR:                'MAX_UPDATES_PER_HOUR';
 MAX_USER_CONNECTIONS:                'MAX_USER_CONNECTIONS';
 MEDIUM:                              'MEDIUM';
+MEMBER:                              'MEMBER';
 MERGE:                               'MERGE';
 MESSAGE_TEXT:                        'MESSAGE_TEXT';
 MID:                                 'MID';
@@ -509,6 +510,7 @@ NODEGROUP:                           'NODEGROUP';
 NONE:                                'NONE';
 OFFLINE:                             'OFFLINE';
 OFFSET:                              'OFFSET';
+OF:                                  'OF';
 OJ:                                  'OJ';
 OLD_PASSWORD:                        'OLD_PASSWORD';
 ONE:                                 'ONE';
@@ -1230,7 +1232,7 @@ fragment CHARSET_NAME:               ARMSCII8 | ASCII | BIG5 | BINARY | CP1250
                                      | UTF8 | UTF8MB3 | UTF8MB4;
 
 fragment EXPONENT_NUM_PART:          'E' [-+]? DEC_DIGIT+;
-fragment ID_LITERAL:                 [A-Z_$0-9]*?[A-Z_$]+?[A-Z_$0-9]*;
+fragment ID_LITERAL:                 [A-Z_$0-9\u0080-\uFFFF]*?[A-Z_$\u0080-\uFFFF]+?[A-Z_$0-9\u0080-\uFFFF]*;
 fragment DQUOTA_STRING:              '"' ( '\\'. | '""' | ~('"'| '\\') )* '"';
 fragment SQUOTA_STRING:              '\'' ('\\'. | '\'\'' | ~('\'' | '\\'))* '\'';
 fragment BQUOTA_STRING:              '`' ( '\\'. | '``' | ~('`'|'\\'))* '`';
